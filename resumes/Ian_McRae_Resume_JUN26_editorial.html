@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ian McRae — Career Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F3EDE0;
+  --paper-dark: #E8DEC9;
+  --ink: #1A1714;
+  --ink-mid: #3C3730;
+  --ink-light: #7A7060;
+  --red: #8B1A1A;
+  --gold: #B8860B;
+  --rule: rgba(26,23,20,0.15);
+  --col-width: 680px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+/* Grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── VERSION BANNER ── */
+.version-banner {
+  background: var(--red);
+  color: var(--paper);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.65rem 2rem;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.version-banner span { opacity: 0.8; }
+.version-banner a {
+  color: var(--paper);
+  text-decoration: none;
+  border: 1.5px solid rgba(243,237,224,0.6);
+  padding: 0.3rem 1.1rem;
+  letter-spacing: 0.15em;
+  transition: background 0.15s;
+}
+.version-banner a:hover { background: rgba(243,237,224,0.15); }
+.version-banner a.primary {
+  background: var(--paper);
+  color: var(--red);
+  border-color: var(--paper);
+  font-weight: bold;
+  letter-spacing: 0.12em;
+}
+.version-banner a.primary:hover { background: rgba(243,237,224,0.88); }
+
+/* ── MASTHEAD ── */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  text-align: center;
+  padding: 0.6rem 2rem;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+.masthead a { color: rgba(243,237,224,0.5); text-decoration: none; margin: 0 1.5rem; }
+
+/* ── ISSUE BAR ── */
+.issue-bar {
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 0.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── WRAPPER ── */
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── COVER ── */
+.cover {
+  padding: 3.5rem 0 0;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 0;
+}
+
+.kicker {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.cover-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  max-width: 820px;
+  letter-spacing: -0.02em;
+}
+
+.cover-deck {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--ink-mid);
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.byline {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  border-top: 1px solid var(--rule);
+  padding-top: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+/* ── PHOTO PLACEHOLDER ── */
+.photo-block {
+  background: var(--ink);
+  color: var(--paper);
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2rem;
+  margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
+}
+.photo-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.02) 3px,
+    rgba(255,255,255,0.02) 4px
+  );
+}
+.photo-label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(243,237,224,0.35);
+  text-align: right;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+.photo-caption {
+  font-style: italic;
+  font-size: 0.82rem;
+  color: rgba(243,237,224,0.55);
+  text-align: right;
+  width: 100%;
+  margin-top: 0.3rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── ARTICLE BODY ── */
+.article-body {
+  max-width: var(--col-width);
+  margin: 0 auto;
+  padding: 3.5rem 0 4rem;
+}
+
+/* Drop cap */
+.article-body > p:first-child::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  float: left;
+  line-height: 0.75;
+  margin-right: 0.1em;
+  margin-top: 0.1em;
+  color: var(--ink);
+}
+
+.article-body p {
+  margin-bottom: 1.4rem;
+  color: var(--ink-mid);
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
+/* Section markers */
+.section-rule {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 3rem 0 2.5rem;
+}
+.section-rule::before,
+.section-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.section-rule span {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  white-space: nowrap;
+}
+
+/* Pull quotes */
+.pull-quote {
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 1.5rem 0;
+  margin: 2.5rem 0;
+}
+.pull-quote p {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 0.5rem !important;
+}
+.pull-quote cite {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  font-style: normal;
+  display: block;
+}
+
+/* Wide pull quote (breaks column) */
+.pull-quote-wide {
+  max-width: 820px;
+  margin: 3rem auto;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2.5rem 3rem;
+}
+.pull-quote-wide p {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.3rem);
+  font-style: italic;
+  color: var(--paper) !important;
+  line-height: 1.3;
+  margin-bottom: 0.75rem !important;
+}
+.pull-quote-wide cite {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(243,237,224,0.5);
+  font-style: normal;
+  display: block;
+}
+
+/* ── RECORD TABLE ── */
+.record-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+}
+.record-table th {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+.record-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.record-table td:first-child {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  white-space: nowrap;
+  padding-right: 1.5rem;
+}
+.record-table tr:last-child td { border-bottom: none; }
+
+/* ── CREDENTIALS BLOCK ── */
+.credentials {
+  background: var(--paper-dark);
+  border: 1px solid var(--rule);
+  padding: 1.75rem 2rem;
+  margin: 2.5rem 0;
+}
+.credentials h4 {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 1rem;
+}
+.credentials ul {
+  list-style: none;
+}
+.credentials ul li {
+  font-size: 0.92rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.credentials ul li:last-child { border-bottom: none; }
+.credentials ul li span {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-light);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  padding-top: 0.15em;
+}
+
+/* ── FOOTER ── */
+.article-footer {
+  max-width: var(--col-width);
+  margin: 0 auto;
+  border-top: 3px double var(--ink);
+  padding-top: 1.5rem;
+  padding-bottom: 5rem;
+}
+.article-footer p {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .cover-headline { font-size: 2.5rem; }
+  .photo-block { height: 280px; }
+  .pull-quote-wide { padding: 1.75rem; margin: 2rem 0; }
+  .article-body { padding: 2rem 0; }
+  .wrapper { padding: 0 1.25rem; }
+  .record-table { font-size: 0.85rem; }
+  .version-banner { flex-wrap: wrap; gap: 0.6rem; font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="version-banner">
+  <span>You're reading the editorial version</span>
+  <a href="Ian_McRae_Resume_JUN26_web.html" class="primary">← Standard CV</a>
+  <a href="Ian_McRae_Resume_JUN26_kg.html">Graph View →</a>
+</div>
+
+<div class="masthead">
+  Career Profiles &nbsp;·&nbsp; The Long Read
+  <a href="#">Technology</a>
+  <a href="#">Leadership</a>
+  <a href="#">AI &amp; Data</a>
+</div>
+
+<div class="wrapper">
+  <div class="issue-bar">
+    <span>Ian McRae &nbsp;·&nbsp; Full Profile</span>
+    <span>Vol. 2026 &nbsp;·&nbsp; June Edition</span>
+    <span>mcraeian@amazon.com</span>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="cover">
+    <span class="kicker">Career Portrait &nbsp;·&nbsp; Senior Technical Product Manager</span>
+    <h1 class="cover-headline">Strongest When the Path Isn't Obvious</h1>
+    <p class="cover-deck">From a Camden Town brewery to the intelligence layer of Amazon Connect — a portrait of someone who learned what a "Product Catalogue" really means by working both sides of the bar.</p>
+    <p class="byline">Profile compiled June 2026 &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/ian-mcrae-products-for-people/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">LinkedIn ↗</a></p>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="photo-block">
+    <p class="photo-label">Editorial Photography Placeholder</p>
+    <p class="photo-caption">Portrait, New York City, 2026</p>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="article-body">
+
+    <p>When Ian McRae first heard the term "Product Catalogue" at Amazon, he assumed it was something he already knew. He was right. Where he came from, a Product Catalogue was a bar menu — and he had spent three years building them, refining them, and winning international gold medals for what went inside them.</p>
+
+    <p>McRae graduated from <a href="https://www.ucd.ie/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">University College Dublin</a> with a BSc in Medicinal Chemistry, published peer-reviewed research on carbene silver acetate cancer drug candidates, and then — in a pivot that still raises eyebrows at AWS leadership meetings — became a professional brewer. The team he led at Camden Town Brewery produced two World Beer Cup Gold Medal winning beers and picked up gold at the International Brewing Awards. He then co-founded <strong>Forest Road Brewing Company</strong>, scaling it through four years of unbroken 100% year-on-year revenue growth to £1.5 million at exit, shipping 400,000 litres while doubling operating margin.</p>
+
+    <p>The founding of Forest Road was, in retrospect, a first-principles exercise in the skills that now define his professional identity: sales forecasting when your product is perishable and seasonal; inventory management when your leverage with suppliers is minimal; building a brand in a market that rewards authenticity above all else. He had to build the systems before he could use them. He has been doing variants of that ever since.</p>
+
+    <div class="pull-quote">
+      <p>"Ian's superpower is his ability to navigate complexity. How he has made sense of this, and found his way through a field of stakeholders across such diverse teams astonishes me."</p>
+      <cite>— Peer review, Amazon Forte 2023</cite>
+    </div>
+
+    <p>There is one earlier chapter that most directly explains his current work in AI and contact centres. At university, McRae worked a contact-centre job, calling alumni to ask for donations. As a second-generation Irishman, he regularly had to lean over to the colleague beside him and ask how to pronounce names like "Bláthnaid." That gap — between a name on a screen and a human voice, and the friction it creates for the agent in between — stayed with him. "Let's just say," he told his current team on joining, "I have a personal appreciation for what good AI can do for agents."</p>
+
+    <div class="section-rule"><span>Part I &nbsp;·&nbsp; The Method</span></div>
+
+    <p>After KPMG — where he joined the award-winning Supply Chain and Operations Advisory team — McRae moved into his first large-scale operations role at Tesco, leading a world-first robotics pilot that automated a stockless fresh distribution centre. He identified a 40% incremental downstream benefit that had gone unseen by identifying how cube-optimised shipping and packing sequences could simplify in-store unpacking. The finding reshaped the commercial case for the entire programme. He then joined Amazon in 2021, relocating from London to Maryland.</p>
+
+    <p>The Amazon Retail years were about impact at system scale. He rearchitected EU supply chain dispute flows to restore vendor agency. He standardised bottle deposit UX across markets. He injected real customer use-cases into a Component Pricing initiative with SVP visibility and materially changed its design direction. In 2023 he was a finalist for Amazon's UK "Think Big: Force for Good" competition, designing a Vulnerable Customer Self-Identification Service — a proposal to bring dignity and clarity to one of retail's least-visible user groups.</p>
+
+    <div class="pull-quote">
+      <p>"You have shown incredible ownership in your role. Your ability to take on new, highly complex and ambiguous areas is exemplary. You bring people along with you and are always calm in a storm."</p>
+      <cite>— Manager feedback (Joe Sturgess), Amazon Forte 2024</cite>
+    </div>
+
+    <p>In 2024 McRae moved into AWS's World Wide Public Sector Engineering organisation. The mandate: qualify and manage multi-million dollar engineering investments across healthcare interoperability (FHIR/HealthLake), Amazon Connect's GovCloud expansion, a knowledge graph infrastructure project called RAGNet, and governed data transfer for Trusted Research Environments — simultaneously, across NAMER, EMEA, and APJ. The discipline he brought to the work was as notable as the delivery: his tenet-based qualification framework, developed during this tenure, was specifically praised by an L8 leader as "Excellent. Love the application of tenets to our decision making." It saved 327 Software Development Engineer Months in a single year by making fast, principled calls on which opportunities to pursue and which to decline.</p>
+
+    <p>He built a Knowledge-as-Code resource alongside the product work: an LLM-queryable knowledge base capturing the team's engagement lifecycle, qualification frameworks, and accumulated product decisions — replacing stale wikis with a system team members could interrogate in natural language. He then designed the agentic skills layer on top: structured prompts for Claude and Kiro, version-controlled and team-contributed, so individual expertise could compound rather than walk out the door when someone changed roles.</p>
+
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="pull-quote-wide">
+    <p>"Ian's super power is being a Problem-solver. He works with autonomy to relentlessly pursue the next steps in the face of ambiguity — consistently applying a strategic mindset, leading conversations up to L10 levels through decision narratives and investment proposals."</p>
+    <cite>— Manager feedback (Ryan Jancaitis), Amazon Forte 2025</cite>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="article-body" style="padding-top: 0;">
+
+    <div class="section-rule"><span>Part II &nbsp;·&nbsp; The Record</span></div>
+
+    <p>The Amazon years — across Retail, WWPS Engineering, and now Applied AI Solutions — represent three consecutive "Exceeds High Bar" performance ratings: Amazon's top tier. The portfolio is wide. The through-line is qualification: knowing which problems to take on, and building frameworks that make that choice principled and repeatable. In his most recent full-year review, his manager described it as "bar-raising strategic impact at the L6 PMT level" — $21.94 million in launched value across 16 unique initiatives, with 10 strategic documents formally reviewed by L8+ leadership.</p>
+
+    <table class="record-table">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Organisation</th>
+          <th>Contribution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>APR 2026–</td>
+          <td>AWS Applied AI Solutions</td>
+          <td>Product intake for Amazon Connect at 1B records/year; Knowledge-as-Code layer; shared data object evolution from systems of record to systems of action</td>
+        </tr>
+        <tr>
+          <td>2024–2026</td>
+          <td>AWS WWPS Engineering</td>
+          <td>$21.94M launched value across 16 initiatives; FHIR/HealthLake, GovCloud, RAGNet, TRE; agentic skills layer; tenet-based qualification framework saving 327 SDEM</td>
+        </tr>
+        <tr>
+          <td>2021–2024</td>
+          <td>Amazon Retail</td>
+          <td>EU supply chain dispute rearchitecture; Component Pricing direction change (SVP visibility); Vulnerable Customer Self-ID finalist</td>
+        </tr>
+        <tr>
+          <td>2019–2021</td>
+          <td>Tesco</td>
+          <td>World-first AMR robotics pilot; 40% incremental downstream benefit identification</td>
+        </tr>
+        <tr>
+          <td>2015–2019</td>
+          <td>Forest Road (Co-founder)</td>
+          <td>4 years 100% YoY revenue growth; £1.5m at exit; 400,000 litres shipped; operating margin doubled</td>
+        </tr>
+        <tr>
+          <td>2015–2017</td>
+          <td>KPMG</td>
+          <td>Award-winning Supply Chain &amp; Operations Advisory practice</td>
+        </tr>
+        <tr>
+          <td>2012–2015</td>
+          <td>Camden Town Brewery</td>
+          <td>Two World Beer Cup Gold Medals; International Brewing Awards gold medals</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pull-quote">
+      <p>"He brings structure to ambiguity, connects teams effectively and doesn't seem to be flustered when others around him are."</p>
+      <cite>— Peer review, Amazon Forte 2024</cite>
+    </div>
+
+    <div class="section-rule"><span>Part III &nbsp;·&nbsp; The Craft</span></div>
+
+    <p>What distinguishes McRae's technical work from conventional product management is a fluency in the architecture of knowledge itself. At WWPS he built a graph-ontology-based semantic data layer — the kind of system that lets AI agents traverse relationships rather than match keywords, giving regulated enterprise customers data access at scale without compromising security or compliance. At Applied AI Solutions he is now defining the next evolution of shared data objects that underpin that work: a deliberate migration from systems that <em>record</em> what happened to systems that <em>act</em> on what's happening, at one billion records per year.</p>
+
+    <p>The same epistemology runs through the team-facing tooling he builds alongside the product work. The structured prompt layers he designed for Claude and Kiro are not a side project: they are the knowledge architecture applied internally. Make the team's reasoning legible. Make it queryable. Make it improvable by the people who use it. He is, as he has described it, building the infrastructure beneath the infrastructure — the layer that makes everything else possible.</p>
+
+    <p>Peers have noted, consistently across three years of reviews, a particular quality in how he communicates this work: "Ian also has an amazing ability to translate complex topics into digestible summaries that less-familiar audiences can comprehend." The same observation, in different words, appears in every cycle. It is, one suspects, the brewer's instinct: you are always selling something to someone who doesn't yet know they want it.</p>
+
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="pull-quote-wide">
+    <p>"Ian's unique combination of strategic thinking, communication prowess, and results-oriented approach makes him a key asset in driving impactful initiatives."</p>
+    <cite>— Peer review, Amazon Annual Review 2026</cite>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="article-body" style="padding-top: 0;">
+
+    <div class="section-rule"><span>Part IV &nbsp;·&nbsp; The Person</span></div>
+
+    <p>In 2023 McRae moved from London to Maryland — his third country of residence after Ireland and the UK — and most recently relocated to New York's Westchester County. He and his partner have two young children: Alex, two years old, and Bonnie, six months. Life outside work is, by his own description, busy in the best possible way — exploring everything the city has to offer as a family.</p>
+
+    <p>He runs, cycles, and plays soccer. He is the co-founder of <a href="https://www.instagram.com/run_dusty/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">@run_dusty</a>, a 7,000-strong NYC running community that promotes accessible running and supports local businesses. The club sits at the intersection of movement, community, and city infrastructure — which is, coincidentally, a fair description of the kind of product he builds best.</p>
+
+    <p>He is currently reading <em>The Soul of a New Machine</em> by Tracy Kidder — the story of a team that built a minicomputer against the odds, under conditions of genuine ambiguity, on a deadline that probably shouldn't have been survivable. The overlap with his professional interests is not accidental. He reads it, one suspects, for the same reason he reads everything: to understand how complex systems behave when subjected to forces they were not designed to accommodate. And to note, with some satisfaction, that they often survive anyway.</p>
+
+    <div class="section-rule"><span>Credentials</span></div>
+
+    <div class="credentials">
+      <h4>Education</h4>
+      <ul>
+        <li>BSc (Hons) Medicinal Chemistry, <a href="https://www.ucd.ie/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">University College Dublin</a> <span>2008–2012</span></li>
+        <li>Diploma in Brewing, <a href="https://www.cibd.org.uk/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">Institute of Brewing and Distilling</a> <span>2014–2017</span></li>
+        <li>Certificate BA, <a href="https://www.cimaglobal.com/" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">CIMA</a>, Chartered Institute of Management Accounting <span>2017–2019</span></li>
+      </ul>
+    </div>
+
+    <div class="credentials" style="margin-top: 1rem;">
+      <h4>Certifications &amp; Recognition</h4>
+      <ul>
+        <li>AWSome Awards All-Star <span>AWS, 2025</span></li>
+        <li>AWS Associate Speaker Certification <span>AWS, 2025</span></li>
+        <li>AWS Cloud Practitioner <span></span></li>
+        <li>Mathematics for Machine Learning — Diploma <span>2021</span></li>
+        <li><a href="https://www.benthamdirect.com/content/journals/lddd/10.2174/157018012803307987" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none;">"In Vitro and In Vivo Investigations into the Carbene Silver Acetate Anticancer Drug Candidate SBC1"</a> &nbsp;·&nbsp; <em>Letters in Drug Design &amp; Discovery</em> <span>Publication</span></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="article-footer">
+    <p>Ian McRae &nbsp;·&nbsp; mcraeian@amazon.com &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/ian-mcrae-products-for-people/" target="_blank" rel="noopener" style="color:var(--red);">linkedin.com/in/ian-mcrae-products-for-people</a></p>
+    <p>Profile compiled June 2026 &nbsp;·&nbsp; All content drawn from verified professional record</p>
+  </div>
+</div>
+
+</body>
+</html>

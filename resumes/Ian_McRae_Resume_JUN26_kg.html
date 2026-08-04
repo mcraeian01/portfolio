@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ian McRae — Knowledge Graph Resume</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root {
+  --bg: #0E0F11;
+  --surface: #161820;
+  --surface2: #1E2128;
+  --border: rgba(255,255,255,0.08);
+  --text: #E2E4EC;
+  --text-muted: #7B8096;
+  --text-dim: #4A4F66;
+
+  /* Node type colours */
+  --c-person:    #F59E42;
+  --c-company:   #5B9BD5;
+  --c-product:   #52C48A;
+  --c-skill:     #A78BFA;
+  --c-education: #E07B5A;
+  --c-concept:   #38BDF8;
+
+  --sans: system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.03em;
+}
+.topbar-badge {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.topbar-right {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.topbar-right a {
+  color: var(--c-person);
+  text-decoration: none;
+}
+.topbar-right a:hover { text-decoration: underline; }
+
+/* ── MAIN LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  height: calc(100vh - 48px);
+  margin-top: 48px;
+}
+
+/* ── GRAPH PANE ── */
+#graph-pane {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#graph-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.graph-hint {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── INFO PANEL ── */
+#info-panel {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.panel-header h2 {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.panel-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.panel-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Node detail card */
+#node-detail {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  min-height: 100px;
+}
+.detail-empty {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+  padding: 1.5rem 0;
+}
+.detail-type-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-family: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  margin-bottom: 0.6rem;
+}
+.detail-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+.detail-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.detail-connections {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.conn-chip {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface2);
+}
+
+/* Legend */
+.legend {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.legend h3 {
+  font-size: 0.68rem;
+  font-family: var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat {
+  background: var(--surface);
+  padding: 0.9rem 1rem;
+  text-align: center;
+}
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+.stat-label {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── EXPLAINER SECTION (below fold) ── */
+.explainer {
+  padding: 5rem 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Full-width explainer below the graph+panel */
+.explainer-full {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 4rem 2rem 6rem;
+}
+
+.explainer-full .inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.explainer-full h2 {
+  font-size: 0.68rem;
+  font-family: var(--mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.explainer-full h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.75rem;
+  line-height: 1.2;
+}
+
+.explainer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+}
+
+.explainer-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+.explainer-card .card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+.explainer-card h4 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.explainer-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Code-style entity example */
+.entity-example {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 3rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+.entity-example .comment { color: var(--text-dim); }
+.entity-example .key { color: var(--c-concept); }
+.entity-example .val { color: var(--c-product); }
+.entity-example .rel { color: var(--c-skill); }
+.entity-example .node { color: var(--c-person); }
+
+/* Agent use cases */
+.use-cases {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.use-case {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+.use-case-q {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  font-style: italic;
+}
+.use-case-q::before { content: '"'; color: var(--c-person); }
+.use-case-q::after  { content: '"'; color: var(--c-person); }
+.use-case-a {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  line-height: 1.5;
+}
+.use-case-a .path { color: var(--c-concept); }
+
+.ian-note {
+  background: var(--surface2);
+  border-left: 3px solid var(--c-person);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 6px 6px 0;
+}
+.ian-note p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.ian-note strong { color: var(--c-person); }
+
+/* Scrollbar */
+#info-panel::-webkit-scrollbar { width: 4px; }
+#info-panel::-webkit-scrollbar-track { background: transparent; }
+#info-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; height: auto; }
+  #graph-pane { height: 60vh; }
+  #info-panel { height: auto; border-left: none; border-top: 1px solid var(--border); }
+  .explainer-grid, .use-cases { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Ian McRae</span>
+    <span class="topbar-badge">Knowledge Graph Resume</span>
+  </div>
+  <div class="topbar-right">
+    <span>Hover nodes to explore · Click to focus</span>
+    <a href="https://www.linkedin.com/in/ian-mcrae-products-for-people/" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="Ian_McRae_Resume_JUN26_web.html" style="background:#F59E42;color:#0E0F11;padding:0.3rem 1rem;border-radius:3px;font-weight:600;font-size:0.72rem;letter-spacing:0.08em;text-decoration:none;margin-left:0.5rem;">← Standard CV</a>
+    <a href="Ian_McRae_Resume_JUN26_editorial.html" style="border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.65);padding:0.3rem 0.85rem;border-radius:3px;font-size:0.72rem;letter-spacing:0.08em;text-decoration:none;">Editorial</a>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- GRAPH -->
+  <div id="graph-pane">
+    <svg id="graph-canvas"></svg>
+    <p class="graph-hint">Drag to pan · Scroll to zoom · Click a node to inspect</p>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div id="info-panel">
+
+    <div class="panel-header">
+      <h2>Entity</h2>
+      <div class="panel-name">Ian McRae</div>
+      <div class="panel-sub">Senior Technical Product Manager · AWS</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-value">7</div>
+        <div class="stat-label">Orgs</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">27</div>
+        <div class="stat-label">Nodes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">38</div>
+        <div class="stat-label">Edges</div>
+      </div>
+    </div>
+
+    <!-- Node Detail -->
+    <div id="node-detail">
+      <p class="detail-empty">Click a node to see its details and connections</p>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h3>Node Types</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-person)"></div> Person</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-company)"></div> Organisation</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-product)"></div> Product / Domain</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-skill)"></div> Skill</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-education)"></div> Education</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c-concept)"></div> Concept</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EXPLAINER -->
+<div class="explainer-full">
+  <div class="inner">
+
+    <h2>Context</h2>
+    <h3>What is a Knowledge Graph, and why do AI agents use them?</h3>
+
+    <div class="explainer-grid">
+      <div class="explainer-card">
+        <div class="card-icon" style="background:rgba(91,155,213,0.15)">🔗</div>
+        <h4>Entities &amp; Relationships</h4>
+        <p>A knowledge graph stores information as <strong>nodes</strong> (entities: people, companies, products, concepts) and <strong>edges</strong> (relationships: "works at", "built", "skilled in"). Unlike a table row, every entity is richly connected.</p>
+      </div>
+      <div class="explainer-card">
+        <div class="card-icon" style="background:rgba(167,139,250,0.15)">🗺️</div>
+        <h4>Traversal Over Lookup</h4>
+        <p>Agents can <strong>traverse</strong> a KG to answer multi-hop questions: "which products did Ian build that touch healthcare?" requires following paths, not matching keywords. The graph is a map, not an index.</p>
+      </div>
+      <div class="explainer-card">
+        <div class="card-icon" style="background:rgba(56,189,248,0.15)">⚡</div>
+        <h4>Structured Context for LLMs</h4>
+        <p>LLMs reason better with structured context. Injecting a KG subgraph into a prompt (e.g., all nodes within 2 hops of "Amazon Connect") gives the model the precise relational facts it needs — no hallucination, no drift.</p>
+      </div>
+    </div>
+
+    <div class="entity-example">
+<span class="comment">// Three triples from Ian's knowledge graph</span><br>
+<span class="node">ian_mcrae</span> <span class="rel">—[works_at]→</span> <span class="node">aws_applied_ai_solutions</span><br>
+<span class="node">aws_applied_ai_solutions</span> <span class="rel">—[builds]→</span>  <span class="node">amazon_connect</span><br>
+<span class="node">ian_mcrae</span> <span class="rel">—[pioneered]→</span> <span class="node">knowledge_as_code</span><br>
+<br>
+<span class="comment">// Agent query: "What has Ian built that uses graph technology?"</span><br>
+<span class="key">MATCH</span> <span class="val">(ian)</span><span class="rel">-[:built|:owns]->(p)</span><span class="rel">-[:built_on]->(</span><span class="val">knowledge_graphs</span><span class="rel">)</span><br>
+<span class="key">RETURN</span> <span class="val">p.label</span><br>
+<span class="comment">// → semantic_data_layer, ragnet, knowledge_as_code</span>
+    </div>
+
+    <h4 style="font-size:0.82rem;font-family:var(--mono);letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem;">Agent Use Cases — Questions this graph can answer</h4>
+
+    <div class="use-cases">
+      <div class="use-case">
+        <p class="use-case-q">What regulated-sector products has Ian shipped?</p>
+        <p class="use-case-a"><span class="path">ian → wwps → fhir_healthlake</span><br><span class="path">ian → wwps → govcloud</span><br><span class="path">ian → wwps → tre_data_transfer</span></p>
+      </div>
+      <div class="use-case">
+        <p class="use-case-q">Which skills connect his technical and product work?</p>
+        <p class="use-case-a"><span class="path">ian → knowledge_graphs → semantic_layer</span><br><span class="path">ian → llm_tooling → knowledge_as_code</span><br><span class="path">ian → agentic_ai → amazon_connect</span></p>
+      </div>
+      <div class="use-case">
+        <p class="use-case-q">What is the path from chemistry to AI product management?</p>
+        <p class="use-case-a"><span class="path">ucd_chemistry → camden_brewery</span><br><span class="path">camden → forest_road → kpmg</span><br><span class="path">kpmg → tesco → amazon → aws</span></p>
+      </div>
+      <div class="use-case">
+        <p class="use-case-q">What concepts has Ian introduced to his teams?</p>
+        <p class="use-case-a"><span class="path">ian → knowledge_as_code</span><br><span class="path">ian → systems_of_action</span><br><span class="path">ian → semantic_data_layer</span></p>
+      </div>
+    </div>
+
+    <div class="ian-note">
+      <p><strong>Ian's actual work:</strong> At AWS WWPS Engineering, McRae owned product for a <strong>graph-ontology-based semantic data layer</strong> powering agentic workflows for regulated enterprise customers — the same architectural pattern shown in this graph, applied to real enterprise data at scale. His Knowledge-as-Code layer at Applied AI Solutions is, in essence, a knowledge graph made LLM-queryable. This resume is not a metaphor. It is a demonstration.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────
+const nodeData = [
+  // Person
+  { id: "ian",            label: "Ian McRae",                type: "person",    r: 28,
+    desc: "Senior Technical Product Manager at AWS. Three-time consecutive top performer. Background spans chemistry, consulting, supply chain, co-founding, and agentic AI.",
+    meta: "mcraeian@amazon.com" },
+
+  // Organisations
+  { id: "aws_aais",       label: "Applied AI\nSolutions",    type: "company",   r: 18,
+    desc: "AWS org building four agentic AI products for enterprise workflows: Amazon Connect Decisions, Talent, Customer, and Health.",
+    meta: "AWS · APR 2026 – Present" },
+  { id: "aws_wwps",       label: "AWS WWPS\nEngineering",    type: "company",   r: 18,
+    desc: "AWS World Wide Public Sector Engineering — investment qualification and product across NAMER, EMEA, APJ.",
+    meta: "AWS · APR 2024 – APR 2026" },
+  { id: "amazon_retail",  label: "Amazon\nRetail",           type: "company",   r: 16,
+    desc: "EU supply chain, pricing, and regulatory change programmes. Three-year tenure, three consecutive top-performer ratings.",
+    meta: "Amazon · JUL 2021 – APR 2024" },
+  { id: "tesco",          label: "Tesco",                    type: "company",   r: 14,
+    desc: "Transformation Program Manager. World-first AMR robotics pilot; identified 40% incremental downstream benefit.",
+    meta: "NOV 2019 – JUL 2021" },
+  { id: "forest_road",    label: "Forest Road\n(Co-founder)",type: "company",   r: 14,
+    desc: "Co-founded craft spirits operation. 4 years 100% YoY revenue growth to £1.5m; 400,000 litres at exit.",
+    meta: "NOV 2015 – OCT 2019" },
+  { id: "kpmg",           label: "KPMG",                     type: "company",   r: 12,
+    desc: "Award-winning Supply Chain and Operations Advisory Team.",
+    meta: "SEP 2015 – MAY 2017" },
+  { id: "camden",         label: "Camden Town\nBrewery",     type: "company",   r: 12,
+    desc: "Senior Brewer. Two World Beer Cup Gold Medal winning products.",
+    meta: "SEP 2012 – JUN 2015" },
+
+  // Products / Domains
+  { id: "amazon_connect", label: "Amazon\nConnect",          type: "product",   r: 15,
+    desc: "AWS's AI-powered customer experience portfolio — Decisions (supply chains), Talent (hiring), Customer (CX), Health (healthcare).",
+    meta: "Product · 1B records/year" },
+  { id: "fhir",           label: "FHIR /\nHealthLake",       type: "product",   r: 11,
+    desc: "Healthcare interoperability investment — HL7 FHIR standard, Amazon HealthLake for regulated health data.",
+    meta: "Investment · WWPS" },
+  { id: "ragnet",         label: "RAGNet",                   type: "product",   r: 11,
+    desc: "Knowledge graph infrastructure for retrieval-augmented generation in regulated enterprise environments.",
+    meta: "Investment · WWPS" },
+  { id: "govcloud",       label: "Connect\nGovCloud",        type: "product",   r: 11,
+    desc: "Amazon Connect expansion into AWS GovCloud for US public sector customers.",
+    meta: "Investment · WWPS" },
+  { id: "tre",            label: "TRE Data\nTransfer",       type: "product",   r: 10,
+    desc: "Governed data transfer for Trusted Research Environments — secure, compliant data access for research institutions.",
+    meta: "Investment · WWPS" },
+
+  // Skills
+  { id: "kg_systems",     label: "Knowledge\nGraphs",        type: "skill",     r: 13,
+    desc: "Graph-ontology design and semantic data layers. Applied to enterprise data access and agentic AI workflows.",
+    meta: "Skill" },
+  { id: "llm_tooling",    label: "LLM\nTooling",             type: "skill",     r: 12,
+    desc: "Claude, Kiro, and custom structured prompt design. Version-controlled prompt layers for team-wide adoption.",
+    meta: "Skill · Claude, Kiro" },
+  { id: "agentic_ai",     label: "Agentic AI",               type: "skill",     r: 12,
+    desc: "Agentic workflow design and product ownership for AI systems that take actions within enterprise platforms.",
+    meta: "Skill · Domain" },
+  { id: "sql",            label: "SQL",                      type: "skill",     r: 9,
+    desc: "Structured query language for relational data analysis.",
+    meta: "Skill · Technical" },
+  { id: "python",         label: "Python",                   type: "skill",     r: 9,
+    desc: "Working proficiency for data analysis, scripting, and LLM tooling.",
+    meta: "Skill · Technical" },
+
+  // Education
+  { id: "ucd",            label: "UCD\nChemistry",           type: "education", r: 12,
+    desc: "BSc (Hons) Medicinal Chemistry, University College Dublin. Published research on carbene silver acetate anticancer candidates.",
+    meta: "2008 – 2012" },
+  { id: "ibd",            label: "IBD\nBrewing",             type: "education", r: 10,
+    desc: "Diploma in Brewing, Institute of Brewing and Distilling.",
+    meta: "2014 – 2017" },
+  { id: "cima",           label: "CIMA",                     type: "education", r: 10,
+    desc: "Certificate BA, Chartered Institute of Management Accounting.",
+    meta: "2017 – 2019" },
+
+  // Concepts (things Ian created / defined)
+  { id: "kac",            label: "Knowledge-\nas-Code",      type: "concept",   r: 13,
+    desc: "LLM-queryable knowledge base capturing engagement lifecycle, qualification frameworks, and institutional product decisions. Replaces stale wikis with an interrogatable system.",
+    meta: "Concept / Innovation" },
+  { id: "soa",            label: "Systems of\nAction",       type: "concept",   r: 12,
+    desc: "The transition from systems that record what happened to systems that act on what's happening — McRae's framing for the next evolution of shared data objects at 1B records/year.",
+    meta: "Concept / Direction" },
+  { id: "semantic_layer", label: "Semantic\nData Layer",     type: "concept",   r: 12,
+    desc: "Graph-ontology-based semantic data layer powering agentic workflows for regulated enterprise customers. Delivers enterprise-scale data access while maintaining security and compliance.",
+    meta: "Concept / Delivered" },
+  { id: "agentic_skills", label: "Agentic\nSkills Layer",    type: "concept",   r: 11,
+    desc: "Structured prompts for Claude and Kiro enabling team members to inject their own context and contribute back via version control.",
+    meta: "Concept / Shipped" },
+];
+
+const linkData = [
+  // Ian → Orgs
+  { s: "ian", t: "aws_aais",      label: "leads",        strength: 0.9 },
+  { s: "ian", t: "aws_wwps",      label: "led",          strength: 0.9 },
+  { s: "ian", t: "amazon_retail", label: "worked at",    strength: 0.8 },
+  { s: "ian", t: "tesco",         label: "worked at",    strength: 0.7 },
+  { s: "ian", t: "forest_road",   label: "co-founded",   strength: 0.7 },
+  { s: "ian", t: "kpmg",          label: "worked at",    strength: 0.6 },
+  { s: "ian", t: "camden",        label: "worked at",    strength: 0.6 },
+
+  // Orgs → Products
+  { s: "aws_aais",  t: "amazon_connect", label: "owns",      strength: 0.9 },
+  { s: "aws_wwps",  t: "fhir",           label: "invested",  strength: 0.8 },
+  { s: "aws_wwps",  t: "ragnet",         label: "built",     strength: 0.8 },
+  { s: "aws_wwps",  t: "govcloud",       label: "expanded",  strength: 0.8 },
+  { s: "aws_wwps",  t: "tre",            label: "built",     strength: 0.8 },
+
+  // Ian → Skills
+  { s: "ian", t: "kg_systems",  label: "expert in",    strength: 0.85 },
+  { s: "ian", t: "llm_tooling", label: "applies",      strength: 0.85 },
+  { s: "ian", t: "agentic_ai",  label: "specialises",  strength: 0.85 },
+  { s: "ian", t: "sql",         label: "knows",        strength: 0.6 },
+  { s: "ian", t: "python",      label: "knows",        strength: 0.6 },
+
+  // Ian → Education
+  { s: "ian", t: "ucd",  label: "studied",    strength: 0.7 },
+  { s: "ian", t: "ibd",  label: "studied",    strength: 0.65 },
+  { s: "ian", t: "cima", label: "certified",  strength: 0.65 },
+
+  // Ian → Concepts
+  { s: "ian", t: "kac",           label: "pioneered",  strength: 0.9 },
+  { s: "ian", t: "soa",           label: "defining",   strength: 0.85 },
+  { s: "ian", t: "semantic_layer",label: "built",      strength: 0.85 },
+  { s: "ian", t: "agentic_skills",label: "shipped",    strength: 0.8 },
+
+  // Concept cross-links
+  { s: "kac",            t: "llm_tooling",  label: "uses",      strength: 0.7 },
+  { s: "semantic_layer", t: "kg_systems",   label: "built on",  strength: 0.75 },
+  { s: "ragnet",         t: "kg_systems",   label: "uses",      strength: 0.7 },
+  { s: "soa",            t: "amazon_connect",label: "applies to",strength: 0.6 },
+  { s: "agentic_skills", t: "llm_tooling",  label: "uses",      strength: 0.65 },
+  { s: "kac",            t: "aws_wwps",     label: "used in",   strength: 0.65 },
+  { s: "kac",            t: "aws_aais",     label: "used in",   strength: 0.65 },
+
+  // Education → career path
+  { s: "ucd",  t: "camden",       label: "→ led to",  strength: 0.4 },
+  { s: "ibd",  t: "forest_road",  label: "→ led to",  strength: 0.4 },
+  { s: "cima", t: "amazon_retail",label: "→ supports",strength: 0.35 },
+];
+
+// ─────────────────────────────────────────
+//  COLOURS
+// ─────────────────────────────────────────
+const typeColor = {
+  person:    "#F59E42",
+  company:   "#5B9BD5",
+  product:   "#52C48A",
+  skill:     "#A78BFA",
+  education: "#E07B5A",
+  concept:   "#38BDF8",
+};
+
+// ─────────────────────────────────────────
+//  D3 FORCE GRAPH
+// ─────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const pane   = document.getElementById('graph-pane');
+  const svgEl  = document.getElementById('graph-canvas');
+  const W = pane.clientWidth;
+  const H = pane.clientHeight;
+
+  const svg = d3.select(svgEl)
+    .attr('width', W)
+    .attr('height', H);
+
+  // Defs: arrowhead marker + glow filter
+  const defs = svg.append('defs');
+
+  const types = Object.keys(typeColor);
+  types.forEach(t => {
+    defs.append('marker')
+      .attr('id', 'arrow-' + t)
+      .attr('viewBox', '0 -4 8 8')
+      .attr('refX', 18)
+      .attr('refY', 0)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-4L8,0L0,4')
+      .attr('fill', typeColor[t])
+      .attr('opacity', 0.5);
+  });
+
+  // Glow filter
+  const glow = defs.append('filter').attr('id', 'glow');
+  glow.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'blur');
+  const merge = glow.append('feMerge');
+  merge.append('feMergeNode').attr('in', 'blur');
+  merge.append('feMergeNode').attr('in', 'SourceGraphic');
+
+  // Zoom container
+  const g = svg.append('g');
+  svg.call(
+    d3.zoom()
+      .scaleExtent([0.3, 4])
+      .on('zoom', e => g.attr('transform', e.transform))
+  );
+
+  // Build node/link objects
+  const nodes = nodeData.map(d => ({ ...d }));
+  const nodeById = new Map(nodes.map(n => [n.id, n]));
+  const links = linkData.map(d => ({
+    source: nodeById.get(d.s),
+    target: nodeById.get(d.t),
+    label: d.label,
+    strength: d.strength,
+  }));
+
+  // Simulation
+  const sim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links)
+      .id(d => d.id)
+      .distance(d => {
+        const rs = d.source.r || 10;
+        const rt = d.target.r || 10;
+        return (rs + rt) * 3.5 + 40;
+      })
+      .strength(d => d.strength * 0.3)
+    )
+    .force('charge', d3.forceManyBody()
+      .strength(d => -Math.pow(d.r, 1.6) * 12)
+    )
+    .force('center', d3.forceCenter(W / 2, H / 2).strength(0.08))
+    .force('collision', d3.forceCollide().radius(d => d.r + 22).strength(0.85))
+    .alphaDecay(0.025);
+
+  // Links
+  const linkGroup = g.append('g').attr('class', 'links');
+  const linkEl = linkGroup.selectAll('line')
+    .data(links)
+    .enter().append('line')
+    .attr('stroke', d => typeColor[d.source.type] || '#666')
+    .attr('stroke-opacity', 0.2)
+    .attr('stroke-width', d => Math.max(1, d.strength * 2))
+    .attr('marker-end', d => `url(#arrow-${d.source.type})`);
+
+  // Link labels
+  const linkLabelEl = g.append('g').attr('class', 'link-labels')
+    .selectAll('text')
+    .data(links.filter(l => l.strength > 0.7))
+    .enter().append('text')
+    .attr('font-size', '8px')
+    .attr('fill', 'rgba(255,255,255,0.18)')
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'ui-monospace, monospace')
+    .text(d => d.label);
+
+  // Nodes
+  const nodeGroup = g.append('g').attr('class', 'nodes');
+  const nodeEl = nodeGroup.selectAll('.node')
+    .data(nodes)
+    .enter().append('g')
+    .attr('class', 'node')
+    .style('cursor', 'pointer')
+    .call(
+      d3.drag()
+        .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
+        .on('end',   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+    )
+    .on('click', (e, d) => { e.stopPropagation(); focusNode(d); })
+    .on('mouseover', (e, d) => hoverNode(d, true))
+    .on('mouseout',  (e, d) => hoverNode(d, false));
+
+  // Circles
+  nodeEl.append('circle')
+    .attr('r', d => d.r)
+    .attr('fill', d => typeColor[d.type])
+    .attr('fill-opacity', d => d.type === 'person' ? 1 : 0.85)
+    .attr('stroke', d => d.type === 'person' ? '#fff' : 'transparent')
+    .attr('stroke-width', d => d.type === 'person' ? 2.5 : 0);
+
+  // Halo ring for person
+  nodes.filter(n => n.type === 'person').forEach(d => {
+    nodeGroup.append('circle')
+      .datum(d)
+      .attr('r', d.r + 6)
+      .attr('fill', 'none')
+      .attr('stroke', typeColor.person)
+      .attr('stroke-width', 1)
+      .attr('stroke-opacity', 0.3)
+      .attr('class', 'halo');
+  });
+
+  // Labels
+  nodeEl.each(function(d) {
+    const lines = d.label.split('\n');
+    const textEl = d3.select(this).append('text')
+      .attr('text-anchor', 'middle')
+      .attr('font-family', 'system-ui, sans-serif')
+      .attr('font-size', d.r > 14 ? '10px' : '8.5px')
+      .attr('fill', d.type === 'person' ? '#fff' : 'rgba(255,255,255,0.85)')
+      .attr('font-weight', d.type === 'person' ? '700' : '400')
+      .attr('pointer-events', 'none');
+
+    const lineH = d.r > 14 ? 12 : 10;
+    const yStart = -(lines.length - 1) * lineH / 2;
+    lines.forEach((line, i) => {
+      textEl.append('tspan')
+        .attr('x', 0)
+        .attr('dy', i === 0 ? yStart : lineH)
+        .text(line);
+    });
+  });
+
+  // Simulation tick
+  sim.on('tick', () => {
+    linkEl
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
+
+    linkLabelEl
+      .attr('x', d => (d.source.x + d.target.x) / 2)
+      .attr('y', d => (d.source.y + d.target.y) / 2);
+
+    nodeEl.attr('transform', d => `translate(${d.x},${d.y})`);
+
+    g.selectAll('.halo').attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+
+  // Click on background to reset
+  svg.on('click', () => resetFocus());
+
+  // ── INTERACTION ──
+  let focused = null;
+
+  function focusNode(d) {
+    focused = d;
+    // Find connected node IDs
+    const connIds = new Set([d.id]);
+    links.forEach(l => {
+      if (l.source.id === d.id) connIds.add(l.target.id);
+      if (l.target.id === d.id) connIds.add(l.source.id);
+    });
+
+    nodeEl.selectAll('circle')
+      .attr('fill-opacity', n => connIds.has(n.id) ? (n.type === 'person' ? 1 : 0.9) : 0.1)
+      .attr('stroke-opacity', n => connIds.has(n.id) ? 1 : 0.1);
+
+    nodeEl.selectAll('text')
+      .attr('fill-opacity', n => connIds.has(n.id) ? 1 : 0.15);
+
+    linkEl
+      .attr('stroke-opacity', l =>
+        (l.source.id === d.id || l.target.id === d.id) ? 0.7 : 0.04
+      )
+      .attr('stroke-width', l =>
+        (l.source.id === d.id || l.target.id === d.id) ? 2 : 1
+      );
+
+    showDetail(d, connIds);
+  }
+
+  function hoverNode(d, on) {
+    if (focused) return;
+    const circle = nodeEl.filter(n => n.id === d.id).select('circle');
+    circle.attr('fill', on ? '#fff' : typeColor[d.type])
+          .attr('fill-opacity', on ? 0.95 : (d.type === 'person' ? 1 : 0.85));
+  }
+
+  function resetFocus() {
+    focused = null;
+    nodeEl.selectAll('circle')
+      .attr('fill-opacity', d => d.type === 'person' ? 1 : 0.85)
+      .attr('stroke-opacity', 1);
+    nodeEl.selectAll('text').attr('fill-opacity', 1);
+    linkEl.attr('stroke-opacity', 0.2).attr('stroke-width', d => Math.max(1, d.strength * 2));
+    document.getElementById('node-detail').innerHTML =
+      '<p class="detail-empty">Click a node to see its details and connections</p>';
+  }
+
+  function showDetail(d, connIds) {
+    const conns = nodes.filter(n => connIds.has(n.id) && n.id !== d.id);
+    const colorHex = typeColor[d.type];
+    const bgAlpha = colorHex + '22';
+
+    let html = `
+      <div class="detail-type-badge" style="background:${bgAlpha};color:${colorHex};border:1px solid ${bgAlpha}">
+        ${d.type.toUpperCase()}
+      </div>
+      <div class="detail-title">${d.label.replace('\n', ' ')}</div>
+      <div class="detail-desc" style="margin-bottom:0.5rem">${d.desc}</div>
+      <div style="font-size:0.7rem;font-family:var(--mono);color:var(--text-dim);margin-bottom:0.6rem">${d.meta}</div>
+      <div class="detail-connections">
+    `;
+
+    // Show connected edges
+    const edgesFromNode = links.filter(l => l.source.id === d.id || l.target.id === d.id);
+    edgesFromNode.slice(0, 8).forEach(l => {
+      const other = l.source.id === d.id ? l.target : l.source;
+      const col = typeColor[other.type];
+      html += `<span class="conn-chip" style="border-color:${col}44;color:${col}">${l.label} ${other.label.replace('\n',' ')}</span>`;
+    });
+
+    html += '</div>';
+    document.getElementById('node-detail').innerHTML = html;
+  }
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    const W2 = pane.clientWidth;
+    const H2 = pane.clientHeight;
+    svg.attr('width', W2).attr('height', H2);
+    sim.force('center', d3.forceCenter(W2/2, H2/2).strength(0.08));
+    sim.alpha(0.3).restart();
+  });
+});
+</script>
+</body>
+</html>

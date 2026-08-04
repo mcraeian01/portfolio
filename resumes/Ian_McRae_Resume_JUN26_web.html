@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ian McRae — Senior Technical Product Manager</title>
+<style>
+:root {
+  --ivory: #FAF9F5;
+  --slate: #141413;
+  --clay: #D97757;
+  --olive: #788C5D;
+  --gray-300: #D1CFC5;
+  --gray-500: #87867F;
+  --gray-700: #3D3D3A;
+  --serif: ui-serif, Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ivory);
+  color: var(--gray-700);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky;
+  top: 0;
+  background: var(--slate);
+  color: #fff;
+  padding: 0.75rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.25);
+}
+header .name {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  color: #fff;
+  text-decoration: none;
+}
+header nav a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-left: 1.75rem;
+  transition: color 0.2s;
+}
+header nav a:hover { color: var(--clay); }
+header nav .view-link {
+  color: rgba(255,255,255,0.35);
+  border-left: 1px solid rgba(255,255,255,0.15);
+  padding-left: 1.75rem;
+  font-size: 0.65rem;
+}
+header nav .view-link:hover { color: rgba(255,255,255,0.65); }
+
+/* ── MAIN ── */
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 4.5rem 2rem 6rem;
+}
+
+/* ── HERO ── */
+.hero {
+  border-bottom: 2px solid var(--slate);
+  padding-bottom: 2.75rem;
+  margin-bottom: 3.5rem;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 400;
+  color: var(--slate);
+  line-height: 1.05;
+  margin-bottom: 0.4rem;
+}
+.hero h1 em { color: var(--clay); font-style: normal; }
+.hero .role {
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+}
+.contact {
+  font-size: 0.9rem;
+  color: var(--gray-500);
+  margin-bottom: 1.75rem;
+}
+.contact a { color: var(--clay); text-decoration: none; }
+.contact a:hover { text-decoration: underline; }
+.bio {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--gray-700);
+  max-width: 700px;
+  border-left: 3px solid var(--clay);
+  padding-left: 1.25rem;
+}
+
+/* ── SECTION HEADER ── */
+.section-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--clay);
+  font-weight: 700;
+  font-family: var(--sans);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-300);
+}
+
+/* ── EXPERIENCE ── */
+section { margin-bottom: 4rem; }
+
+.job {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0 2.5rem;
+  margin-bottom: 2.75rem;
+  padding-bottom: 2.75rem;
+  border-bottom: 1px solid var(--gray-300);
+}
+.job:last-child { border-bottom: none; margin-bottom: 0; }
+
+.job-meta { padding-top: 0.1rem; }
+.job-dates {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  line-height: 1.5;
+  font-feature-settings: "tnum";
+}
+.job-company {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--clay);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.4rem;
+}
+
+.job-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--slate);
+  font-weight: 400;
+  margin-bottom: 0.85rem;
+  line-height: 1.3;
+}
+
+.job ul {
+  list-style: none;
+  padding: 0;
+}
+.job ul li {
+  padding-left: 1.25rem;
+  position: relative;
+  margin-bottom: 0.65rem;
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--gray-700);
+}
+.job ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--clay);
+  font-size: 0.85rem;
+  top: 0.05em;
+}
+
+/* ── EDUCATION ── */
+.edu-entry {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0 2.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--gray-300);
+}
+.edu-entry:last-child { border-bottom: none; }
+.edu-dates {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-top: 0.1rem;
+}
+.edu-degree {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--slate);
+}
+.edu-institution {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  margin-top: 0.15rem;
+}
+
+/* ── SKILLS ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.skill-group h3 {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--gray-500);
+  margin-bottom: 0.65rem;
+  font-family: var(--sans);
+  font-weight: 700;
+}
+.skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag {
+  background: rgba(217,119,87,0.08);
+  color: var(--clay);
+  padding: 0.22rem 0.65rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+  border: 1px solid rgba(217,119,87,0.3);
+  font-family: var(--sans);
+}
+
+/* ── CERTS ── */
+.cert-list { list-style: none; }
+.cert-list li {
+  font-size: 0.92rem;
+  padding: 0.55rem 0 0.55rem 1.4rem;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-300);
+  position: relative;
+}
+.cert-list li:last-child { border-bottom: none; }
+.cert-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--clay);
+  font-size: 0.45rem;
+  top: 0.85em;
+}
+
+/* ── INLINE LINKS ── */
+a.ref {
+  color: var(--clay);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(217,119,87,0.35);
+  transition: border-color 0.2s, color 0.2s;
+}
+a.ref:hover {
+  color: var(--slate);
+  border-bottom-color: var(--slate);
+}
+
+/* ── ACTIVITIES ── */
+.activities {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--gray-700);
+  font-style: italic;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--gray-300);
+  margin-top: 5rem;
+  padding-top: 1.5rem;
+  font-size: 0.78rem;
+  color: var(--gray-500);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── PRINT ── */
+@media print {
+  header { display: none; }
+  main { padding: 1rem; max-width: 100%; }
+  .job, .edu-entry { page-break-inside: avoid; }
+  .bio { border-left: none; padding-left: 0; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  header nav { display: none; }
+  .job, .edu-entry { grid-template-columns: 1fr; }
+  .job-meta, .edu-dates { margin-bottom: 0.4rem; }
+  .skills-grid { grid-template-columns: 1fr; }
+  main { padding: 2.5rem 1.25rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="name">Ian McRae</a>
+  <nav>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#skills">Skills</a>
+    <a href="#certifications">Certifications</a>
+    <a href="Ian_McRae_Resume_JUN26_editorial.html" class="view-link">Editorial</a>
+    <a href="Ian_McRae_Resume_JUN26_kg.html" class="view-link">Graph</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="hero">
+    <p class="role">Senior Technical Product Manager</p>
+    <h1>Ian <em>McRae</em></h1>
+    <p class="contact">
+      mcraeian@amazon.com &nbsp;·&nbsp;
+      <a href="https://www.linkedin.com/in/ian-mcrae-products-for-people/" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </p>
+    <p class="bio">Senior Technical Product Manager at AWS, building AI-powered products for enterprise and public sector customers. Three-time consecutive top performer with a track record of qualifying and shipping in ambiguous, high-stakes environments — from securing multi-million dollar engineering investments to leading cross-functional teams across government, healthcare, and commerce. Background spans chemistry, consulting, supply chain, and entrepreneurship; strongest when complexity is high and the path isn't obvious.</p>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <h2 class="section-title">Experience</h2>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">APR 2026<br>Present</div>
+        <div class="job-company">AWS</div>
+      </div>
+      <div>
+        <div class="job-title">Senior Product Manager, Applied AI Solutions</div>
+        <ul>
+          <li>Lead product intake for the Data &amp; Insights function within <a class="ref" href="https://www.aboutamazon.com/news/aws/amazon-connect-ai-business-set" target="_blank" rel="noopener">Amazon Connect</a> — AWS's AI-powered customer experience portfolio spanning Decisions (supply chains), Talent (hiring), Customer (CX), and Health (healthcare) — owning the funnel from customer request through delivery commitment.</li>
+          <li>Building a Knowledge-as-Code layer that makes institutional expertise LLM-queryable — reducing onboarding time and eliminating single points of failure as the team scales.</li>
+          <li>Defining the next evolution of shared data objects to drive the portfolio's transition from systems of record to systems of action, at 1 billion records per year.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">APR 2024<br>APR 2026</div>
+        <div class="job-company">AWS</div>
+      </div>
+      <div>
+        <div class="job-title">Senior Product Manager, WWPS Engineering</div>
+        <ul>
+          <li>Qualified and managed multi-million dollar engineering investments spanning healthcare interoperability (<a class="ref" href="https://aws.amazon.com/healthlake/" target="_blank" rel="noopener">FHIR/HealthLake</a>), <a class="ref" href="https://www.aboutamazon.com/news/aws/amazon-connect-ai-business-set" target="_blank" rel="noopener">Amazon Connect</a> GovCloud expansion, knowledge graph infrastructure (RAGNet), and governed data transfer for Trusted Research Environments — delivering across NAMER, EMEA, and APJ.</li>
+          <li>Built a Knowledge-as-Code resource: an LLM-queryable knowledge base capturing the team's engagement lifecycle, qualification frameworks, and institutional product decisions — replacing stale wikis with a system team members interrogate through natural language.</li>
+          <li>Designed and shipped the team's agentic skills layer: structured prompts for Claude and Kiro enabling team members to inject their own context and contribute back via version control.</li>
+          <li>Owned product for a graph-ontology-based semantic data layer powering agentic workflows for regulated enterprise customers — delivering enterprise-scale data access while maintaining security and compliance.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">JUL 2021<br>APR 2024</div>
+        <div class="job-company">Amazon</div>
+      </div>
+      <div>
+        <div class="job-title">Senior Product Manager, Retail</div>
+        <ul>
+          <li>Rearchitected EU supply chain dispute flows to restore vendor agency; standardised bottle deposit UX across markets; injected real customer use-cases into a Component Pricing initiative with SVP visibility, materially changing the design direction.</li>
+          <li>Finalist: UK "Think Big: Force for Good" competition — designed a Vulnerable Customer Self-Identification Service for Amazon's retail experience.</li>
+          <li>Collaborated with data science and engineering teams on EU-wide regulatory change programmes, including bottle deposit scheme standardisation and pricing infrastructure modernisation affecting millions of customer transactions.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">NOV 2019<br>JUL 2021</div>
+        <div class="job-company">Tesco</div>
+      </div>
+      <div>
+        <div class="job-title">Transformation Program Manager</div>
+        <ul>
+          <li>Led a world-first robotics (AMR) pilot automating a stockless fresh distribution center.</li>
+          <li>Identified 40% incremental benefit downstream of the facility through cube-optimized shipping and packing sequences designed for in-store unpacking — a finding that shaped the commercial case for the programme.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">NOV 2015<br>OCT 2019</div>
+        <div class="job-company">Forest Road</div>
+      </div>
+      <div>
+        <div class="job-title">Co-Founder, Ops and Finance Director</div>
+        <ul>
+          <li>Co-founded and scaled operations through 4 years of 100% YoY revenue growth to £1.5m, shipping 400,000 litres at exit while doubling operating margin.</li>
+          <li>Established systems for sales forecasting, inventory management and production planning with sales and operational planning (S&amp;OP) inputs.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">SEP 2015<br>MAY 2017</div>
+        <div class="job-company">KPMG</div>
+      </div>
+      <div>
+        <div class="job-title">Consultant</div>
+        <ul>
+          <li>Part of the award-winning Supply Chain and Operations Advisory Team.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job">
+      <div class="job-meta">
+        <div class="job-dates">SEP 2012<br>JUN 2015</div>
+        <div class="job-company">Camden Town<br>Brewery</div>
+      </div>
+      <div>
+        <div class="job-title">Senior Brewer</div>
+        <ul>
+          <li>Led the brewing team, managed operations, and produced two World Beer Cup Gold Medal winning products.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <h2 class="section-title">Education</h2>
+
+    <div class="edu-entry">
+      <div class="edu-dates">2017 – 2019</div>
+      <div>
+        <div class="edu-degree">Certificate BA, CIMA</div>
+        <div class="edu-institution"><a class="ref" href="https://www.cimaglobal.com/" target="_blank" rel="noopener">Chartered Institute of Management Accounting</a></div>
+      </div>
+    </div>
+
+    <div class="edu-entry">
+      <div class="edu-dates">2014 – 2017</div>
+      <div>
+        <div class="edu-degree">Diploma in Brewing</div>
+        <div class="edu-institution"><a class="ref" href="https://www.cibd.org.uk/" target="_blank" rel="noopener">Institute of Brewing and Distilling</a></div>
+      </div>
+    </div>
+
+    <div class="edu-entry">
+      <div class="edu-dates">2008 – 2012</div>
+      <div>
+        <div class="edu-degree">BSc (Hons) Medicinal Chemistry</div>
+        <div class="edu-institution"><a class="ref" href="https://www.ucd.ie/" target="_blank" rel="noopener">University College Dublin</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <h2 class="section-title">Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h3>Technical</h3>
+        <div class="skill-tags">
+          <span class="tag">SQL</span>
+          <span class="tag">Python</span>
+          <span class="tag">Claude</span>
+          <span class="tag">Kiro</span>
+          <span class="tag">LLM Tooling</span>
+          <span class="tag">Knowledge Graphs</span>
+          <span class="tag">Ontology Design</span>
+          <span class="tag">Prompt Engineering</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Domains</h3>
+        <div class="skill-tags">
+          <span class="tag">Agentic AI</span>
+          <a class="tag" href="https://www.aboutamazon.com/news/aws/amazon-connect-ai-business-set" target="_blank" rel="noopener" style="text-decoration:none;">Amazon Connect ↗</a>
+          <span class="tag">Healthcare IT</span>
+          <span class="tag">Public Sector</span>
+          <span class="tag">e-Commerce</span>
+          <span class="tag">Supply Chain</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Product</h3>
+        <div class="skill-tags">
+          <span class="tag">0 → 1 Product</span>
+          <span class="tag">Platform Strategy</span>
+          <span class="tag">Investment Qualification</span>
+          <span class="tag">Cross-functional Leadership</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Languages</h3>
+        <div class="skill-tags">
+          <span class="tag">English (Native)</span>
+          <span class="tag">German (Professional)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <h2 class="section-title">Licences, Certifications &amp; Publications</h2>
+    <ul class="cert-list">
+      <li>AWSome Awards All-Star &nbsp;·&nbsp; AWS, 2025</li>
+      <li>AWS Associate Speaker Certification &nbsp;·&nbsp; AWS, 2025</li>
+      <li>AWS Cloud Practitioner</li>
+      <li>Mathematics for Machine Learning &nbsp;·&nbsp; Diploma, 2021</li>
+      <li>Publication: <a class="ref" href="https://www.benthamdirect.com/content/journals/lddd/10.2174/157018012803307987" target="_blank" rel="noopener">"In Vitro and In Vivo Investigations into the Carbene Silver Acetate Anticancer Drug Candidate SBC1"</a> &nbsp;·&nbsp; <em>Letters in Drug Design &amp; Discovery</em></li>
+    </ul>
+  </section>
+
+  <!-- ACTIVITIES -->
+  <section id="activities">
+    <h2 class="section-title">Activities</h2>
+    <p class="activities">Distance running — co-founded <a class="ref" href="https://www.instagram.com/run_dusty/" target="_blank" rel="noopener">@run_dusty</a>, a 7K-strong NYC community run club promoting accessible running and local businesses. Currently reading Sebastian Raschka's <a class="ref" href="https://www.manning.com/books/build-a-large-language-model-from-scratch" target="_blank" rel="noopener"><em>Build a Large Language Model from Scratch</em></a> alongside Herman Wouk's historical fiction.</p>
+  </section>
+
+  <footer>
+    <span>Ian McRae &nbsp;·&nbsp; mcraeian@amazon.com</span>
+    <span>Updated June 2026</span>
+  </footer>
+
+</main>
+</body>
+</html>
